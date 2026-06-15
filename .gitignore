@@ -1,0 +1,6 @@
+# Environment variables (Do not commit your API keys!)
+.env
+
+# Python cache files
+__pycache__/
+*.py[cod]
