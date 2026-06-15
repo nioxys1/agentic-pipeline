@@ -1,0 +1,11 @@
+# Dependencies
+node_modules/
+
+# Environment variables (API keys, secrets)
+.env
+.env.*
+
+# Logs and temporary files
+*.log
+npm-debug.log*
+coverage/

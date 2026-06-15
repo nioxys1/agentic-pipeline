@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes Contacts</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+        .form-group { margin-bottom: 1rem; display: flex; gap: 10px; }
+        input { padding: 8px; flex: 1; }
+        button { padding: 8px 15px; cursor: pointer; background: #667eea; color: white; border: none; border-radius: 4px; }
+        .contact-item { background: #f4f4f4; padding: 10px; margin: 10px 0; display: flex; justify-content: space-between; align-items: center; border-radius: 4px; }
+        .delete-btn { background: #e74c3c; font-size: 0.8em; }
+    </style>
+</head>
+<body>
+    <h1>Carnet de Contacts</h1>
+    
+    <div class="form-group">
+        <input type="text" id="nameInput" placeholder="Nom">
+        <input type="email" id="emailInput" placeholder="Email">
+        <button onclick="add()">Ajouter</button>
+    </div>
+    
+    <div id="list"></div>
+
+    <script>
+        async function load() {
+            const res = await fetch('/api/contacts');
+            const contacts = await res.json();
+            const div = document.getElementById('list');
+            div.innerHTML = contacts.map(c => `
+                <div class="contact-item">
+                    <span><strong>${c.name}</strong> (${c.email})</span>
+                    <button class="delete-btn" onclick="del(${c.id})">Supprimer</button>
+                </div>
+            `).join('');
+        }
+
+        async function add() {
+            const name = document.getElementById('nameInput').value;
+            const email = document.getElementById('emailInput').value;
+            
+            const res = await fetch('/api/contacts', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ name, email })
+            });
+
+            if (res.ok) {
+                document.getElementById('nameInput').value = '';
+                document.getElementById('emailInput').value = '';
+                load();
+            } else {
+                const data = await res.json();
+                alert('Erreur: ' + data.error);
+            }
+        }
+
+        async function del(id) {
+            await fetch(`/api/contacts/${id}`, { method: 'DELETE' });
+            load();
+        }
+
+        load();
+    </script>
+</body>
+</html>
